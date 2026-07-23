@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pulso · Organizador</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="wrap-wide">
+    <div class="row" style="margin-bottom:16px">
+      <div class="brand" style="margin:0"><span class="dot"></span><h1>Pulso · Organizador</h1></div>
+      <div class="spacer"></div>
+      <span id="modo" class="small muted"></span>
+    </div>
+
+    <!-- Puerta de acceso -->
+    <div id="gate" class="card" style="max-width:360px">
+      <p style="margin:0 0 10px;font-weight:500">Acceso al panel</p>
+      <input type="password" id="pass" placeholder="Clave del organizador">
+      <button id="entrar" class="btn-primary" style="width:100%;margin-top:10px">Entrar</button>
+      <p id="gate-err" class="small" style="color:#a32d2d;margin:8px 0 0"></p>
+    </div>
+
+    <!-- Panel -->
+    <div id="panel" class="hidden">
+      <!-- Crear / seleccionar pregunta -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="row">
+          <input type="text" id="nueva-preg" placeholder="Escribe una pregunta nueva…" style="flex:1;min-width:220px">
+          <button id="crear" class="btn-primary">Abrir pregunta</button>
+        </div>
+        <div id="lista-sesiones" class="chips" style="margin-top:12px"></div>
+      </div>
+
+      <div id="activa-zona" class="hidden">
+        <div class="row" style="margin-bottom:12px">
+          <div>
+            <p class="small muted" style="margin:0">Pregunta activa</p>
+            <p id="activa-txt" style="font-size:18px;font-weight:600;margin:2px 0 0"></p>
+          </div>
+          <div class="spacer"></div>
+          <div class="row">
+            <button id="ver-tarjetas" class="btn-primary">Tarjetas</button>
+            <button id="ver-nube">Nube</button>
+            <button id="exportar">Exportar PDF</button>
+          </div>
+        </div>
+
+        <div class="grid-stats" style="margin-bottom:16px">
+          <div class="stat"><p class="k">Respuestas</p><p class="v" id="s-total">0</p></div>
+          <div class="stat"><p class="k">Con miedo</p><p class="v" id="s-miedo">0</p></div>
+          <div class="stat"><p class="k">Confundidos</p><p class="v" id="s-confundido">0</p></div>
+          <div class="stat"><p class="k">Positivos</p><p class="v" id="s-feliz">0</p></div>
+        </div>
+
+        <div class="admin-cols">
+          <div>
+            <div id="tarjetas" style="display:flex;flex-direction:column;gap:10px"></div>
+            <div id="nube" class="card cloud hidden"></div>
+            <p id="vacio" class="muted center" style="padding:24px 0">Aún no hay respuestas. Proyecta el QR para que la gente participe.</p>
+          </div>
+          <div class="qr-box">
+            <div id="qr"></div>
+            <p class="small" style="font-weight:500;margin:0 0 2px">Escanéame</p>
+            <p class="small muted" id="qr-url" style="margin:0;word-break:break-all"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

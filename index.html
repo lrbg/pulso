@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Pulso</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><h1>Pulso</h1></div>
+
+    <!-- Estado: sin pregunta activa -->
+    <div id="espera" class="card center hidden">
+      <div class="face-stage" id="espera-face"></div>
+      <p class="muted">Aún no hay una pregunta activa. Espera a que el organizador la abra.</p>
+    </div>
+
+    <!-- Estado: formulario -->
+    <div id="form" class="hidden">
+      <p class="small muted" style="margin:0">Pregunta</p>
+      <p class="pregunta" id="pregunta-txt"></p>
+      <div class="face-stage" id="live-face"></div>
+      <p class="mood-tag" id="mood-tag">Escribe tu respuesta y verás la reacción</p>
+      <div style="margin:16px 0 10px">
+        <textarea id="resp" rows="3" placeholder="Escribe aquí tu respuesta…" maxlength="400"></textarea>
+      </div>
+      <input type="text" id="nombre" placeholder="Tu nombre (opcional)" maxlength="40">
+      <button id="enviar" class="btn-primary" style="width:100%;margin-top:12px">Enviar respuesta</button>
+      <p class="small muted center" style="margin-top:10px">Si dejas el nombre vacío, tu respuesta es anónima.</p>
+    </div>
+
+    <!-- Estado: gracias -->
+    <div id="gracias" class="card gracias hidden">
+      <div class="face-stage" id="gracias-face"></div>
+      <h2>¡Gracias!</h2>
+      <p class="muted">Tu respuesta quedó registrada.</p>
+      <button id="otra" style="margin-top:8px">Enviar otra</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/participant.js"></script>
+</body>
+</html>

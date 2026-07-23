@@ -7,8 +7,8 @@
 // (todo en el navegador, sin nube) para que la puedas ver funcionando.
 
 const CONFIG = {
-  SUPABASE_URL: 'TU_SUPABASE_URL',
-  SUPABASE_ANON_KEY: 'TU_SUPABASE_ANON_KEY',
+  SUPABASE_URL: 'https://rcxemmhjnnmjhenqefnn.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_L5bBuufGvzGRnq6rd_tuAw_5n7pfqiR',
 
   // Clave simple para entrar al panel del organizador (admin.html).
   // Es proteccion ligera (ofuscacion), no seguridad fuerte. Cambiala.

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pulso · Proyectar</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .proj { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px 20px; }
+    .proj .brand { justify-content: center; margin-bottom: 20px; }
+    .proj .brand h1 { font-size: 22px; }
+    .proj-preg { font-size: clamp(24px, 4vw, 44px); font-weight: 600; line-height: 1.25; max-width: 14ch; margin: 0 auto 28px; }
+    .proj-qr { background: #fff; padding: 20px; border-radius: 20px; display: inline-block; }
+    .proj-cta { font-size: clamp(16px, 2vw, 22px); color: var(--texto-2); margin: 22px 0 6px; }
+    .proj-url { font-size: 15px; color: var(--texto-3); word-break: break-all; }
+    .proj-count { margin-top: 22px; font-size: 18px; color: var(--texto-2); }
+    .proj-count b { color: var(--amarillo-borde); font-size: 24px; }
+  </style>
+</head>
+<body>
+  <div class="proj">
+    <div class="brand"><span class="dot"></span><h1>Pulso</h1></div>
+
+    <div id="espera" class="hidden">
+      <div class="face-stage" id="espera-face"></div>
+      <p class="proj-cta">Esperando a que el organizador abra una pregunta…</p>
+    </div>
+
+    <div id="activa" class="hidden">
+      <p class="proj-preg" id="preg"></p>
+      <div class="proj-qr"><div id="qr"></div></div>
+      <p class="proj-cta">Escanea el código con tu celular para participar</p>
+      <p class="proj-url" id="url"></p>
+      <p class="proj-count" id="count"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/proyectar.js"></script>
+</body>
+</html>

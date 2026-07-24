@@ -1,5 +1,5 @@
-// Pantalla publica de proyeccion: muestra el QR grande y la pregunta activa
-// para que los usuarios escaneen. Sin contrasena. Solo lectura.
+// Pantalla publica de proyeccion: muestra SIEMPRE el QR grande (para que la gente
+// escanee y entre a la sala) y la pregunta activa. Sin contrasena. Solo lectura.
 
 (function () {
   const $ = (id) => document.getElementById(id);
@@ -10,6 +10,7 @@
     return location.origin + location.pathname.replace(/proyectar\.html$/, 'index.html');
   }
 
+  // El QR apunta siempre a la misma URL de la sala: se dibuja una vez y se queda.
   function renderQR() {
     const url = participantURL();
     $('qr').innerHTML = '';
@@ -17,39 +18,34 @@
     $('url').textContent = url;
   }
 
-  async function loadCount() {
-    if (!sesionId) return;
-    const resp = await Store.getResponses(sesionId);
-    setCount(resp.length);
-    if (unsub) { unsub(); unsub = null; }
-    let n = resp.length;
-    unsub = Store.subscribeResponses(sesionId, () => { n += 1; setCount(n); });
-  }
   function setCount(n) {
     $('count').innerHTML = n > 0 ? `<b>${n}</b> respuesta${n === 1 ? '' : 's'} hasta ahora` : 'Sé el primero en responder';
   }
 
+  async function loadCount() {
+    if (!sesionId) return;
+    const resp = await Store.getResponses(sesionId);
+    let n = resp.length;
+    setCount(n);
+    if (unsub) { unsub(); unsub = null; }
+    unsub = Store.subscribeResponses(sesionId, () => { n += 1; setCount(n); });
+  }
+
   async function tick() {
-    const sesion = await Store.getActiveSession();
-    if (!sesion) {
-      $('activa').classList.add('hidden');
-      $('espera').classList.remove('hidden');
-      $('espera-face').innerHTML = faceHTML('neutral', 140);
-      sesionId = null;
-      if (unsub) { unsub(); unsub = null; }
+    const s = await Store.getActiveSession();
+    if (!s) {
+      $('preg').textContent = 'La pregunta aparecerá aquí en un momento…';
+      $('preg').classList.add('espera');
+      $('count').textContent = '';
+      if (sesionId !== null) { sesionId = null; if (unsub) { unsub(); unsub = null; } }
     } else {
-      $('espera').classList.add('hidden');
-      $('activa').classList.remove('hidden');
-      $('preg').textContent = sesion.pregunta;
-      renderQR();
-      if (sesion.id !== sesionId) {
-        sesionId = sesion.id;
-        await loadCount();
-      }
+      $('preg').textContent = s.pregunta;
+      $('preg').classList.remove('espera');
+      if (s.id !== sesionId) { sesionId = s.id; await loadCount(); }
     }
-    // Revisa si el organizador cambio de pregunta.
     setTimeout(tick, 4000);
   }
 
+  renderQR();
   tick();
 })();

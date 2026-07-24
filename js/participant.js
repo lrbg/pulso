@@ -1,5 +1,6 @@
-// Vista del participante: carga la pregunta activa, muestra la carita
-// reaccionando mientras escriben, y registra la respuesta.
+// Vista del participante: el usuario escanea el QR UNA vez y se queda en la sala.
+// La pregunta activa se refresca sola: cuando el organizador avanza de pregunta,
+// la pantalla cambia a la nueva sin que tenga que volver a escanear.
 
 (function () {
   const $ = (id) => document.getElementById(id);
@@ -10,20 +11,6 @@
 
   let sesion = null;
 
-  async function init() {
-    sesion = await Store.getActiveSession();
-    if (!sesion) {
-      $('espera-face').innerHTML = faceHTML('confundido', 150);
-      show('espera');
-      // Reintentar por si el organizador abre la pregunta en breve.
-      setTimeout(init, 4000);
-      return;
-    }
-    $('pregunta-txt').textContent = sesion.pregunta;
-    renderLive('');
-    show('form');
-  }
-
   function renderLive(text) {
     const mood = classifyMood(text);
     $('live-face').innerHTML = faceHTML(mood, 150);
@@ -32,9 +19,35 @@
       : 'Escribe tu respuesta y verás la reacción';
   }
 
+  // Prepara el formulario para una pregunta (nueva o la primera de la sesión).
+  function mostrarPregunta(nueva) {
+    sesion = nueva;
+    $('pregunta-txt').textContent = sesion.pregunta;
+    $('resp').value = '';
+    renderLive('');
+    // Nueva ronda: permite responder de inmediato aunque acabe de enviar la anterior.
+    sessionStorage.removeItem('pulso_last');
+    show('form');
+  }
+
+  // Ciclo de sondeo: mantiene al participante en la pregunta activa de la sala.
+  async function poll() {
+    const activa = await Store.getActiveSession();
+    if (!activa) {
+      if (sesion !== null) sesion = null;
+      $('espera-face').innerHTML = faceHTML('confundido', 150);
+      show('espera');
+    } else if (!sesion || activa.id !== sesion.id) {
+      // Primera pregunta, o el organizador avanzó a otra: cambiamos la vista.
+      mostrarPregunta(activa);
+    }
+    setTimeout(poll, 4000);
+  }
+
   $('resp').addEventListener('input', (e) => renderLive(e.target.value));
 
   $('enviar').addEventListener('click', async () => {
+    if (!sesion) return;
     const texto = $('resp').value.trim();
     if (!texto) { $('resp').focus(); return; }
 
@@ -70,5 +83,5 @@
     $('resp').focus();
   });
 
-  init();
+  poll();
 })();

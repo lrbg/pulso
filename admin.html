@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pulso · Organizador</title>
-  <link rel="stylesheet" href="css/styles.css?v=3">
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
   <div class="wrap-wide">
@@ -24,42 +24,40 @@
 
     <!-- Panel -->
     <div id="panel" class="hidden">
-      <!-- Crear / seleccionar pregunta -->
       <div class="card" style="margin-bottom:16px">
-        <div class="row">
-          <input type="text" id="nueva-preg" placeholder="Escribe una pregunta nueva…" style="flex:1;min-width:220px">
-          <button id="crear" class="btn-primary">Abrir pregunta</button>
-        </div>
-        <div id="lista-sesiones" class="chips" style="margin-top:12px"></div>
+        <p style="margin:0 0 4px;font-weight:500">Preguntas de la partida</p>
+        <p class="small muted" style="margin:0 0 12px">Toca una pregunta para iniciar su ronda (20 segundos de votación).</p>
+        <div id="lista-sesiones" class="chips"></div>
       </div>
 
       <div id="activa-zona" class="hidden">
-        <div class="row" style="margin-bottom:12px">
-          <div>
-            <p class="small muted" style="margin:0">Pregunta activa</p>
-            <p id="activa-txt" style="font-size:18px;font-weight:600;margin:2px 0 0"></p>
-          </div>
-          <div class="spacer"></div>
-          <div class="row">
-            <button id="ver-tarjetas" class="btn-primary">Tarjetas</button>
-            <button id="ver-nube">Nube</button>
-            <button id="exportar">Exportar PDF</button>
-          </div>
-        </div>
-
-        <div class="grid-stats" style="margin-bottom:16px">
-          <div class="stat"><p class="k">Respuestas</p><p class="v" id="s-total">0</p></div>
-          <div class="stat"><p class="k">Con miedo</p><p class="v" id="s-miedo">0</p></div>
-          <div class="stat"><p class="k">Confundidos</p><p class="v" id="s-confundido">0</p></div>
-          <div class="stat"><p class="k">Positivos</p><p class="v" id="s-feliz">0</p></div>
-        </div>
-
         <div class="admin-cols">
           <div>
-            <div id="tarjetas" style="display:flex;flex-direction:column;gap:10px"></div>
-            <div id="nube" class="card cloud hidden"></div>
-            <p id="vacio" class="muted center" style="padding:24px 0">Aún no hay respuestas. Proyecta el QR para que la gente participe.</p>
+            <div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+              <div style="flex:1;min-width:0">
+                <p class="small muted" style="margin:0">Pregunta activa</p>
+                <p id="activa-txt" style="font-size:18px;font-weight:600;margin:2px 0 0"></p>
+              </div>
+              <div class="timer" id="admin-timer">20</div>
+            </div>
+
+            <div class="lead">
+              <div id="lead-face"></div>
+              <div>
+                <p id="lead-label" style="font-size:16px;font-weight:500;margin:0"></p>
+                <p class="small muted" style="margin:2px 0 0"><b id="total-votos">0</b> votos</p>
+              </div>
+            </div>
+
+            <div id="chart" class="chart"></div>
+
+            <div class="row" style="margin-top:16px">
+              <button id="reiniciar">Reiniciar 20s</button>
+              <button id="cerrar">Cerrar ronda</button>
+              <button id="exportar">Exportar PDF</button>
+            </div>
           </div>
+
           <div class="qr-box">
             <div id="qr"></div>
             <p class="small" style="font-weight:500;margin:0 0 2px">QR para los participantes</p>
@@ -75,9 +73,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-  <script src="js/config.js?v=3"></script>
-  <script src="js/character.js?v=3"></script>
-  <script src="js/store.js?v=3"></script>
-  <script src="js/admin.js?v=3"></script>
+  <script src="js/config.js?v=4"></script>
+  <script src="js/character.js?v=4"></script>
+  <script src="js/store.js?v=4"></script>
+  <script src="js/admin.js?v=4"></script>
 </body>
 </html>

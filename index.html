@@ -4,45 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Pulso</title>
-  <link rel="stylesheet" href="css/styles.css?v=3">
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
   <div class="wrap">
     <div class="brand"><span class="dot"></span><h1>Pulso</h1></div>
 
-    <!-- Estado: sin pregunta activa -->
+    <!-- Estado: esperando ronda -->
     <div id="espera" class="card center hidden">
       <div class="face-stage" id="espera-face"></div>
-      <p class="muted">Aún no hay una pregunta activa. Espera a que el organizador la abra.</p>
+      <p class="muted" id="espera-msg">Espera a que el organizador inicie una pregunta.</p>
     </div>
 
-    <!-- Estado: formulario -->
-    <div id="form" class="hidden">
-      <p class="small muted" style="margin:0">Pregunta</p>
+    <!-- Estado: votando -->
+    <div id="votar" class="hidden">
+      <div class="timer-wrap"><div class="timer" id="timer">20</div></div>
       <p class="pregunta" id="pregunta-txt"></p>
-      <div class="face-stage" id="live-face"></div>
-      <p class="mood-tag" id="mood-tag">Escribe tu respuesta y verás la reacción</p>
-      <div style="margin:16px 0 10px">
-        <textarea id="resp" rows="3" placeholder="Escribe aquí tu respuesta…" maxlength="400"></textarea>
-      </div>
-      <input type="text" id="nombre" placeholder="Tu nombre (opcional)" maxlength="40">
-      <button id="enviar" class="btn-primary" style="width:100%;margin-top:12px">Enviar respuesta</button>
-      <p class="small muted center" style="margin-top:10px">Si dejas el nombre vacío, tu respuesta es anónima.</p>
+      <div id="opciones" class="opciones"></div>
     </div>
 
-    <!-- Estado: gracias -->
-    <div id="gracias" class="card gracias hidden">
-      <div class="face-stage" id="gracias-face"></div>
-      <h2>¡Gracias!</h2>
-      <p class="muted">Tu respuesta quedó registrada.</p>
-      <button id="otra" style="margin-top:8px">Enviar otra</button>
+    <!-- Estado: ya votó -->
+    <div id="votado" class="card center hidden">
+      <div class="face-stage" id="votado-face"></div>
+      <p id="votado-msg" style="font-size:16px;font-weight:500;margin:6px 0 2px"></p>
+      <p class="small muted">Espera la siguiente pregunta…</p>
+    </div>
+
+    <!-- Estado: se acabó el tiempo (sin votar) -->
+    <div id="tiempo" class="card center hidden">
+      <div class="face-stage" id="tiempo-face"></div>
+      <p style="font-size:16px;font-weight:500;margin:6px 0 2px">Se acabó el tiempo</p>
+      <p class="small muted">Espera la siguiente pregunta…</p>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js?v=3"></script>
-  <script src="js/character.js?v=3"></script>
-  <script src="js/store.js?v=3"></script>
-  <script src="js/participant.js?v=3"></script>
+  <script src="js/config.js?v=4"></script>
+  <script src="js/character.js?v=4"></script>
+  <script src="js/store.js?v=4"></script>
+  <script src="js/participant.js?v=4"></script>
 </body>
 </html>

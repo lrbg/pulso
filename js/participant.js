@@ -1,87 +1,77 @@
-// Vista del participante: el usuario escanea el QR UNA vez y se queda en la sala.
-// La pregunta activa se refresca sola: cuando el organizador avanza de pregunta,
-// la pantalla cambia a la nueva sin que tenga que volver a escanear.
+// Vista del participante (v2): escanea una vez. En cada ronda ve la pregunta con
+// opciones y un timer de 20s; vota tocando una opción. Al iniciar el organizador
+// la siguiente pregunta, la pantalla cambia sola. Un voto por pregunta.
 
 (function () {
   const $ = (id) => document.getElementById(id);
-  const views = { espera: $('espera'), form: $('form'), gracias: $('gracias') };
-  function show(name) {
-    Object.keys(views).forEach(k => views[k].classList.toggle('hidden', k !== name));
-  }
+  const views = { espera: $('espera'), votar: $('votar'), votado: $('votado'), tiempo: $('tiempo') };
+  function show(name) { Object.keys(views).forEach(k => views[k].classList.toggle('hidden', k !== name)); }
 
   let sesion = null;
+  let renderedId = null;   // qué pregunta está pintada en las opciones
+  let votedId = null;      // en qué pregunta ya votó (persiste aunque se reinicie el timer)
 
-  function renderLive(text) {
-    const mood = classifyMood(text);
-    $('live-face').innerHTML = faceHTML(mood, 150);
-    $('mood-tag').textContent = text.trim()
-      ? moodLabel(mood)
-      : 'Escribe tu respuesta y verás la reacción';
-  }
-
-  // Prepara el formulario para una pregunta (nueva o la primera de la sesión).
-  function mostrarPregunta(nueva) {
-    sesion = nueva;
+  function renderOpciones() {
+    const ops = sesion.opciones || [];
     $('pregunta-txt').textContent = sesion.pregunta;
-    $('resp').value = '';
-    renderLive('');
-    // Nueva ronda: permite responder de inmediato aunque acabe de enviar la anterior.
-    sessionStorage.removeItem('pulso_last');
-    show('form');
+    $('opciones').innerHTML = ops.map((o, i) => `<button class="opcion" data-i="${i}">${escapeHTML(o.t)}</button>`).join('');
+    Array.from($('opciones').querySelectorAll('.opcion')).forEach(btn => {
+      btn.addEventListener('click', () => votar(Number(btn.dataset.i)));
+    });
   }
 
-  // Ciclo de sondeo: mantiene al participante en la pregunta activa de la sala.
+  async function votar(i) {
+    if (!sesion || votedId === sesion.id) return;
+    if (Store.segundosRestantes(sesion) <= 0) return;
+    const op = (sesion.opciones || [])[i];
+    if (!op) return;
+    Array.from($('opciones').querySelectorAll('.opcion')).forEach(b => (b.disabled = true));
+    try {
+      await Store.addResponse({ sesion_id: sesion.id, opcion: op.t, emocion: op.e, texto: op.t, nombre: null });
+      votedId = sesion.id;
+      $('votado-face').innerHTML = faceHTML(op.e, 150);
+      $('votado-msg').textContent = 'Tu voto: ' + op.t;
+      show('votado');
+    } catch (err) {
+      Array.from($('opciones').querySelectorAll('.opcion')).forEach(b => (b.disabled = false));
+      alert('No se pudo registrar tu voto. Inténtalo de nuevo.');
+      console.error(err);
+    }
+  }
+
+  function decideView() {
+    if (!sesion) { $('espera-face').innerHTML = faceHTML('neutral', 150); show('espera'); return; }
+    if (votedId === sesion.id) { show('votado'); return; }
+    if (Store.segundosRestantes(sesion) > 0) { show('votar'); }
+    else { $('tiempo-face').innerHTML = faceHTML('neutral', 150); show('tiempo'); }
+  }
+
+  function tick() {
+    if (!sesion || votedId === sesion.id) return;
+    const seg = Store.segundosRestantes(sesion);
+    $('timer').textContent = seg;
+    $('timer').classList.toggle('urgente', seg <= 5);
+    if (seg <= 0 && !views.tiempo) return;
+    if (seg <= 0 && views.votar && !views.votar.classList.contains('hidden')) decideView();
+  }
+  setInterval(tick, 300);
+
   async function poll() {
     const activa = await Store.getActiveSession();
-    if (!activa) {
-      if (sesion !== null) sesion = null;
-      $('espera-face').innerHTML = faceHTML('confundido', 150);
+    if (!activa || !activa.termina_en) {
+      sesion = null; renderedId = null;
       show('espera');
-    } else if (!sesion || activa.id !== sesion.id) {
-      // Primera pregunta, o el organizador avanzó a otra: cambiamos la vista.
-      mostrarPregunta(activa);
+    } else {
+      sesion = activa;
+      if (renderedId !== sesion.id) { renderedId = sesion.id; renderOpciones(); }
+      decideView();
     }
-    setTimeout(poll, 4000);
+    setTimeout(poll, 2000);
   }
 
-  $('resp').addEventListener('input', (e) => renderLive(e.target.value));
-
-  $('enviar').addEventListener('click', async () => {
-    if (!sesion) return;
-    const texto = $('resp').value.trim();
-    if (!texto) { $('resp').focus(); return; }
-
-    // Anti-spam simple: evita reenviar lo mismo en menos de 3 segundos.
-    const now = Date.now();
-    const last = Number(sessionStorage.getItem('pulso_last') || 0);
-    if (now - last < 3000) return;
-    sessionStorage.setItem('pulso_last', String(now));
-
-    const mood = classifyMood(texto);
-    $('enviar').disabled = true;
-    try {
-      await Store.addResponse({
-        sesion_id: sesion.id,
-        texto,
-        nombre: $('nombre').value.trim() || null,
-        emocion: mood,
-      });
-      $('gracias-face').innerHTML = faceHTML(mood, 150);
-      $('resp').value = '';
-      show('gracias');
-    } catch (err) {
-      alert('No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.');
-      console.error(err);
-    } finally {
-      $('enviar').disabled = false;
-    }
-  });
-
-  $('otra').addEventListener('click', () => {
-    renderLive('');
-    show('form');
-    $('resp').focus();
-  });
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
 
   poll();
 })();

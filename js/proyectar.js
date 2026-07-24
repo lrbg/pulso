@@ -1,51 +1,55 @@
-// Pantalla publica de proyeccion: muestra SIEMPRE el QR grande (para que la gente
-// escanee y entre a la sala) y la pregunta activa. Sin contrasena. Solo lectura.
+// Pantalla pública de proyección (v2): QR SIEMPRE visible + pregunta activa,
+// sus opciones y el timer de la ronda. Sin contraseña. Solo lectura.
 
 (function () {
   const $ = (id) => document.getElementById(id);
-  let sesionId = null;
-  let unsub = null;
+  let sesion = null;
+  let renderedId = null;
 
-  function participantURL() {
-    return location.origin + location.pathname.replace(/proyectar\.html$/, 'index.html');
-  }
-
-  // El QR apunta siempre a la misma URL de la sala: se dibuja una vez y se queda.
+  function participantURL() { return location.origin + location.pathname.replace(/proyectar\.html$/, 'index.html'); }
   function renderQR() {
     const url = participantURL();
     $('qr').innerHTML = '';
-    if (window.QRCode) new QRCode($('qr'), { text: url, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M });
+    if (window.QRCode) new QRCode($('qr'), { text: url, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
     $('url').textContent = url;
   }
 
-  function setCount(n) {
-    $('count').innerHTML = n > 0 ? `<b>${n}</b> respuesta${n === 1 ? '' : 's'} hasta ahora` : 'Sé el primero en responder';
+  function renderOpciones() {
+    const ops = (sesion && sesion.opciones) || [];
+    $('ops').innerHTML = ops.map(o => `<div class="proj-op">${escapeHTML(o.t)}</div>`).join('');
   }
 
-  async function loadCount() {
-    if (!sesionId) return;
-    const resp = await Store.getResponses(sesionId);
-    let n = resp.length;
-    setCount(n);
-    if (unsub) { unsub(); unsub = null; }
-    unsub = Store.subscribeResponses(sesionId, () => { n += 1; setCount(n); });
+  function tick() {
+    if (!sesion) return;
+    const seg = Store.segundosRestantes(sesion);
+    $('timer').textContent = seg;
+    $('timer').classList.toggle('urgente', seg <= 5 && seg > 0);
   }
+  setInterval(tick, 300);
 
-  async function tick() {
+  async function poll() {
     const s = await Store.getActiveSession();
-    if (!s) {
+    if (!s || !s.termina_en) {
+      sesion = null; renderedId = null;
       $('preg').textContent = 'La pregunta aparecerá aquí en un momento…';
       $('preg').classList.add('espera');
-      $('count').textContent = '';
-      if (sesionId !== null) { sesionId = null; if (unsub) { unsub(); unsub = null; } }
+      $('ops').innerHTML = '';
+      $('timer').classList.add('hidden');
     } else {
+      sesion = s;
       $('preg').textContent = s.pregunta;
       $('preg').classList.remove('espera');
-      if (s.id !== sesionId) { sesionId = s.id; await loadCount(); }
+      $('timer').classList.remove('hidden');
+      if (renderedId !== s.id) { renderedId = s.id; renderOpciones(); }
+      tick();
     }
-    setTimeout(tick, 4000);
+    setTimeout(poll, 2000);
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   renderQR();
-  tick();
+  poll();
 })();

@@ -4,37 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pulso · Proyectar</title>
-  <link rel="stylesheet" href="css/styles.css?v=3">
+  <link rel="stylesheet" href="css/styles.css?v=4">
   <style>
-    .proj { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px 20px; }
-    .proj .brand { justify-content: center; margin-bottom: 20px; }
-    .proj .brand h1 { font-size: 22px; }
-    .proj-preg { font-size: clamp(22px, 4vw, 42px); font-weight: 600; line-height: 1.25; max-width: 16ch; margin: 0 auto 26px; min-height: 1.25em; }
+    .proj { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 28px 20px; }
+    .proj .brand { justify-content: center; margin-bottom: 14px; }
+    .proj-top { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; justify-content: center; }
+    .proj-qr { background: #fff; padding: 16px; border-radius: 18px; display: inline-block; }
+    .proj-main { max-width: 560px; }
+    .proj-preg { font-size: clamp(22px, 3.2vw, 38px); font-weight: 600; line-height: 1.2; margin: 0 0 18px; }
     .proj-preg.espera { color: var(--texto-2); font-weight: 500; }
-    .proj-qr { background: #fff; padding: 20px; border-radius: 20px; display: inline-block; }
-    .proj-cta { font-size: clamp(16px, 2vw, 22px); color: var(--texto-2); margin: 22px 0 6px; }
-    .proj-url { font-size: 15px; color: var(--texto-3); word-break: break-all; }
-    .proj-count { margin-top: 22px; font-size: 18px; color: var(--texto-2); min-height: 1.4em; }
-    .proj-count b { color: var(--amarillo-borde); font-size: 24px; }
+    .proj-ops { display: flex; flex-direction: column; gap: 10px; }
+    .proj-op { background: var(--surface-2); border-radius: 12px; padding: 12px 16px; font-size: clamp(15px, 1.8vw, 20px); text-align: left; }
+    .proj-cta { font-size: 15px; color: var(--texto-3); margin: 14px 0 0; word-break: break-all; }
+    .proj-timer { margin-top: 8px; }
   </style>
 </head>
 <body>
   <div class="proj">
-    <div class="brand"><span class="dot"></span><h1>Pulso</h1></div>
-
-    <p class="proj-preg" id="preg"></p>
-
-    <div class="proj-qr"><div id="qr"></div></div>
-    <p class="proj-cta">Escanea el código con tu celular para participar</p>
-    <p class="proj-url" id="url"></p>
-    <p class="proj-count" id="count"></p>
+    <div class="brand"><span class="dot"></span><h1 style="font-size:22px">Pulso</h1></div>
+    <div class="proj-top">
+      <div>
+        <div class="proj-qr"><div id="qr"></div></div>
+        <p class="proj-cta">Escanea para participar</p>
+        <p class="proj-cta" id="url"></p>
+      </div>
+      <div class="proj-main">
+        <div class="timer proj-timer hidden" id="timer">20</div>
+        <p class="proj-preg" id="preg"></p>
+        <div class="proj-ops" id="ops"></div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <script src="js/config.js?v=3"></script>
-  <script src="js/character.js?v=3"></script>
-  <script src="js/store.js?v=3"></script>
-  <script src="js/proyectar.js?v=3"></script>
+  <script src="js/config.js?v=4"></script>
+  <script src="js/character.js?v=4"></script>
+  <script src="js/store.js?v=4"></script>
+  <script src="js/proyectar.js?v=4"></script>
 </body>
 </html>

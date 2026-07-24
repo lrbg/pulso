@@ -142,6 +142,10 @@
   // ---------- Exportar PDF ----------
   $('exportar').addEventListener('click', () => {
     if (!sesion) return;
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      alert('No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo de nuevo.');
+      return;
+    }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const counts = { miedo: 0, confundido: 0, feliz: 0 };

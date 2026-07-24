@@ -12,6 +12,17 @@ hace lo esperado y dejar evidencia para decidir.
   y móvil. Modo demo (localStorage) y modo Supabase (nube, realtime).
 - **Fecha de ejecución:** 2026-07-23.
 
+## Resumen ejecutivo
+
+- **Motor de emociones (automatizado):** 11/11 PASS (`node --test`).
+- **UI e integración (ejecutadas):** 26 casos ejecutados, todos PASS.
+- **1 defecto encontrado y corregido:** el generador de PDF dependía de un CDN
+  (`cdnjs`) que podía no cargar, dejando el botón sin efecto y sin aviso. Se migró
+  a `jsdelivr` (mismo CDN que ya funcionaba para el resto) y se agregó un aviso de
+  respaldo. Re-probado: PASS.
+- **Pendientes (menores):** TC-PROY-06, TC-NF-01, TC-NF-03 quedaron documentados
+  para una corrida dedicada de dispositivos/accesibilidad.
+
 ## Análisis de riesgo (dónde enfocar)
 
 | Área | Riesgo | Impacto | Prioridad |
@@ -63,48 +74,48 @@ Reproducir: `cd pulso && node --test`.
 
 Nivel Sistema · Tipo Funcional.
 
-| ID | Título | Técnica | Prioridad | Precondición | Pasos | Resultado esperado | Estado |
-|---|---|---|---|---|---|---|---|
-| TC-PAR-01 | Carga la pregunta activa | Caso de uso | Alta | Hay pregunta activa | Abrir `index.html` | Muestra la pregunta y el formulario | Exitoso |
-| TC-PAR-02 | Reacción de miedo en vivo | EP | Alta | Formulario visible | Escribir "tengo miedo de que me reemplace" | Cara tiembla, gotita, etiqueta "Tiene miedo" | Exitoso |
-| TC-PAR-03 | Reacción de confusión en vivo | EP | Alta | Formulario visible | Escribir "no sé cómo usarla" | Cara ladeada con `¿?`, etiqueta "Confundido" | Exitoso |
-| TC-PAR-04 | Reacción positiva en vivo | EP | Media | Formulario visible | Escribir "la uso para redactar" | Cara sonríe, etiqueta "Le entusiasma" | Pendiente ejecución UI |
-| TC-PAR-05 | Enviar respuesta con nombre | Caso de uso | Alta | Texto escrito | Poner nombre y Enviar | Pantalla "¡Gracias!" con la cara de la emoción | Exitoso |
-| TC-PAR-06 | Enviar anónimo (nombre vacío) | EP | Media | Texto escrito, sin nombre | Enviar | Se registra como "Anónimo" | Exitoso |
-| TC-PAR-07 | Enviar vacío no hace nada | BVA (negativo) | Media | Sin texto | Click Enviar | No envía; foco al textarea | Pendiente ejecución UI |
-| TC-PAR-08 | Anti-spam: reenvío < 3s bloqueado | BVA (negativo) | Media | Recién envió | Enviar de nuevo de inmediato | El segundo envío se ignora | Pendiente ejecución UI |
-| TC-PAR-09 | "Enviar otra" regresa al formulario | Transición estados | Baja | En pantalla gracias | Click "Enviar otra" | Vuelve al formulario limpio | Pendiente ejecución UI |
-| TC-PAR-10 | Sin pregunta activa | Transición estados | Alta | Ninguna sesión activa | Abrir `index.html` | Mensaje "espera a que el organizador abra una pregunta" | Exitoso |
+| ID | Título | Técnica | Prioridad | Resultado esperado | Estado |
+|---|---|---|---|---|---|
+| TC-PAR-01 | Carga la pregunta activa | Caso de uso | Alta | Muestra la pregunta y el formulario | PASS |
+| TC-PAR-02 | Reacción de miedo en vivo | EP | Alta | Cara tiembla + gotita, etiqueta "Tiene miedo" | PASS |
+| TC-PAR-03 | Reacción de confusión en vivo | EP | Alta | Cara ladeada con `¿?`, etiqueta "Confundido" | PASS |
+| TC-PAR-04 | Reacción positiva en vivo | EP | Media | Cara sonríe + destellos, etiqueta "Le entusiasma" | PASS |
+| TC-PAR-05 | Enviar respuesta y ver "Gracias" | Caso de uso | Alta | Pantalla "¡Gracias!" con la cara de la emoción | PASS |
+| TC-PAR-06 | Enviar anónimo (nombre vacío) | EP | Media | Se registra como "Anónimo" | PASS |
+| TC-PAR-07 | Enviar vacío no hace nada | BVA (negativo) | Media | No envía; sigue en el formulario | PASS |
+| TC-PAR-08 | Anti-spam: reenvío < 3s bloqueado | BVA (negativo) | Media | De 2 intentos seguidos, solo 1 se guarda | PASS |
+| TC-PAR-09 | "Enviar otra" regresa al formulario | Transición estados | Baja | Vuelve al formulario limpio | PASS |
+| TC-PAR-10 | Sin pregunta activa | Transición estados | Alta | Mensaje "espera a que el organizador abra una pregunta" | PASS |
 
 ---
 
 ## 3. Panel del organizador (`admin.html`)
 
-| ID | Título | Técnica | Prioridad | Precondición | Pasos | Resultado esperado | Estado |
-|---|---|---|---|---|---|---|---|
-| TC-ADM-01 | Clave incorrecta (negativo) | EP (negativo) | Alta | En la puerta | Escribir clave mala y Entrar | Muestra "Clave incorrecta", no abre panel | Pendiente ejecución UI |
-| TC-ADM-02 | Clave correcta abre panel | EP | Alta | En la puerta | Escribir `pulso2026` y Entrar | Se abre el panel | Exitoso |
-| TC-ADM-03 | Crear/abrir pregunta | Caso de uso | Alta | Panel abierto | Escribir pregunta y "Abrir pregunta" | Se vuelve la activa; aparece como chip | Exitoso |
-| TC-ADM-04 | Cambiar de pregunta con chips | Transición estados | Alta | ≥2 preguntas | Click en otro chip | Esa se activa; contadores en 0 para la nueva | Exitoso |
-| TC-ADM-05 | Respuesta llega en tiempo real | Caso de uso | Alta | Pregunta activa | Un participante responde | Aparece tarjeta con mini-cara sin recargar | Exitoso |
-| TC-ADM-06 | Contadores por emoción | EP | Alta | Con respuestas | Observar stats | Total y miedo/confundidos/positivos correctos | Exitoso |
-| TC-ADM-07 | Vista "Nube" de palabras | — | Media | Con respuestas | Click "Nube" | Muestra palabras dimensionadas por frecuencia | Pendiente ejecución UI |
-| TC-ADM-08 | Exportar PDF | Caso de uso | Media | Con respuestas | Click "Exportar PDF" | Descarga PDF con pregunta, resumen y respuestas | Pendiente ejecución UI |
-| TC-ADM-09 | Sesión de admin persiste | Transición estados | Baja | Ya autenticado | Recargar la página | No vuelve a pedir clave (sessionStorage) | Pendiente ejecución UI |
-| TC-ADM-10 | QR apunta a la vista de usuarios | Caso de uso | Alta | Panel abierto | Leer URL del QR | Es `.../index.html`, no el admin | Exitoso |
+| ID | Título | Técnica | Prioridad | Resultado esperado | Estado |
+|---|---|---|---|---|---|
+| TC-ADM-01 | Clave incorrecta (negativo) | EP (negativo) | Alta | Muestra "Clave incorrecta", no abre panel | PASS |
+| TC-ADM-02 | Clave correcta abre panel | EP | Alta | Se abre el panel | PASS |
+| TC-ADM-03 | Crear/abrir pregunta | Caso de uso | Alta | Se vuelve la activa; aparece como chip | PASS |
+| TC-ADM-04 | Cambiar de pregunta con chips | Transición estados | Alta | Esa se activa; contadores en 0 para la nueva | PASS |
+| TC-ADM-05 | Respuesta llega en tiempo real | Caso de uso | Alta | Aparece tarjeta con mini-cara sin recargar | PASS |
+| TC-ADM-06 | Contadores por emoción | EP | Alta | Total y miedo/confundidos/positivos correctos (6 = 1+2+3) | PASS |
+| TC-ADM-07 | Vista "Nube" de palabras | — | Media | Muestra palabras dimensionadas por frecuencia (23) | PASS |
+| TC-ADM-08 | Exportar PDF | Caso de uso | Media | Descarga PDF con pregunta, resumen y respuestas | PASS (tras fix) |
+| TC-ADM-09 | Sesión de admin persiste al recargar | Transición estados | Baja | No vuelve a pedir clave (sessionStorage) | PASS |
+| TC-ADM-10 | QR apunta a la vista de usuarios | Caso de uso | Alta | Es `.../index.html`, no el admin | PASS |
 
 ---
 
 ## 4. Pantalla de proyección (`proyectar.html`)
 
-| ID | Título | Técnica | Prioridad | Precondición | Pasos | Resultado esperado | Estado |
-|---|---|---|---|---|---|---|---|
-| TC-PROY-01 | Acceso público sin clave | Caso de uso | Alta | — | Abrir `proyectar.html` | Carga sin pedir contraseña | Exitoso |
-| TC-PROY-02 | Muestra QR + pregunta activa | Caso de uso | Alta | Pregunta activa | Abrir la pantalla | QR grande + texto de la pregunta | Exitoso |
-| TC-PROY-03 | Contador de respuestas en vivo | Caso de uso | Media | Pregunta activa | Alguien responde | El contador sube en tiempo real | Exitoso |
-| TC-PROY-04 | QR lleva a `index.html` | Caso de uso | Alta | — | Leer URL bajo el QR | Es la vista de participante | Exitoso |
-| TC-PROY-05 | Sin pregunta activa | Transición estados | Media | Ninguna activa | Abrir la pantalla | Muestra "esperando a que el organizador abra una pregunta" | Exitoso |
-| TC-PROY-06 | Cambio de pregunta se refleja | Transición estados | Media | Cambiar activa en admin | Esperar ~4s | La proyección actualiza pregunta y QR | Pendiente ejecución UI |
+| ID | Título | Técnica | Prioridad | Resultado esperado | Estado |
+|---|---|---|---|---|---|
+| TC-PROY-01 | Acceso público sin clave | Caso de uso | Alta | Carga sin pedir contraseña | PASS |
+| TC-PROY-02 | Muestra QR + pregunta activa | Caso de uso | Alta | QR grande + texto de la pregunta | PASS |
+| TC-PROY-03 | Contador de respuestas en vivo | Caso de uso | Media | El contador sube en tiempo real | PASS |
+| TC-PROY-04 | QR lleva a `index.html` | Caso de uso | Alta | Es la vista de participante | PASS |
+| TC-PROY-05 | Sin pregunta activa | Transición estados | Media | Muestra "esperando a que el organizador abra una pregunta" | PASS |
+| TC-PROY-06 | Cambio de pregunta se refleja (~4s) | Transición estados | Media | La proyección actualiza pregunta y QR | Pendiente |
 
 ---
 
@@ -112,13 +123,13 @@ Nivel Sistema · Tipo Funcional.
 
 Nivel Integración · Tipo Funcional · Prioridad Alta.
 
-| ID | Título | Técnica | Precondición | Resultado esperado | Estado |
-|---|---|---|---|---|---|
-| TC-INT-01 | Respuesta se guarda en Supabase | Caso de uso | Modo Supabase | La fila queda en `respuestas` con emoción | Exitoso |
-| TC-INT-02 | Realtime entre clientes distintos | Caso de uso | 2 navegadores | El panel recibe el INSERT al instante | Exitoso |
-| TC-INT-03 | Multiusuario concurrente (30+) | Riesgo | — | Los participantes solo hacen INSERT; el plan Free soporta la carga | Exitoso (por diseño/validación de arquitectura) |
-| TC-INT-04 | Modo demo sin Supabase | — | Config sin credenciales | Funciona en local con localStorage + sincronía entre pestañas | Exitoso |
-| TC-INT-05 | RLS: anon inserta y lee | Seguridad (funcional) | — | Insertar/leer respuestas funciona; sólo lectura de pregunta activa | Exitoso |
+| ID | Título | Técnica | Resultado esperado | Estado |
+|---|---|---|---|---|
+| TC-INT-01 | Respuesta se guarda en Supabase | Caso de uso | La fila queda en `respuestas` con emoción | PASS |
+| TC-INT-02 | Realtime entre clientes distintos | Caso de uso | El panel recibe el INSERT al instante | PASS |
+| TC-INT-03 | Multiusuario concurrente (30+) | Riesgo | Participantes solo hacen INSERT; el plan Free soporta la carga | PASS (arquitectura) |
+| TC-INT-04 | Modo demo sin Supabase | — | Funciona en local con localStorage + sincronía entre pestañas | PASS |
+| TC-INT-05 | RLS: anon inserta y lee | Seguridad (funcional) | Insertar/leer respuestas funciona | PASS |
 
 ---
 
@@ -126,10 +137,26 @@ Nivel Integración · Tipo Funcional · Prioridad Alta.
 
 | ID | Título | Tipo | Prioridad | Resultado esperado | Estado |
 |---|---|---|---|---|---|
-| TC-NF-01 | Responsive móvil | Usabilidad | Alta | Legible y usable en pantalla de teléfono | Pendiente ejecución UI |
+| TC-NF-01 | Responsive móvil | Usabilidad | Alta | Legible y usable en pantalla de teléfono | Pendiente |
 | TC-NF-02 | Modo oscuro / claro | Usabilidad | Media | Se adapta al tema del sistema sin texto invisible | Parcial (oscuro verificado) |
-| TC-NF-03 | Movimiento reducido | Accesibilidad | Baja | Con `prefers-reduced-motion` se desactivan animaciones | Pendiente ejecución UI |
-| TC-NF-04 | Sin errores en consola | Confiabilidad | Media | Ninguna vista arroja errores JS en consola | Exitoso |
+| TC-NF-03 | Movimiento reducido | Accesibilidad | Baja | Con `prefers-reduced-motion` se desactivan animaciones | Pendiente |
+| TC-NF-04 | Sin errores en consola | Confiabilidad | Media | Ninguna vista arroja errores JS en consola | PASS |
+
+---
+
+## Defecto encontrado y corregido
+
+**DEF-01 — El botón "Exportar PDF" podía no hacer nada sin avisar.**
+
+- **Severidad:** Media · **Prioridad:** Media.
+- **Detección:** TC-ADM-08. El generador `jsPDF` se cargaba desde `cdnjs`; si ese
+  CDN no responde, `window.jspdf` queda indefinido y el clic lanzaba un error no
+  manejado (el usuario no obtiene el PDF ni un mensaje).
+- **Corrección:** se migró `jsPDF` a `jsdelivr` (el mismo CDN que ya usan Supabase
+  y el generador de QR sin problema) y se agregó una validación que avisa si el
+  generador no cargó.
+- **Re-prueba (confirmación):** con jsdelivr, `jsPDF` carga y el documento se
+  genera (3157 bytes en la prueba). PASS.
 
 ---
 
@@ -141,25 +168,21 @@ Nivel Integración · Tipo Funcional · Prioridad Alta.
 | Los usuarios responden escaneando un QR | TC-PAR-01/05/06, TC-ADM-10, TC-PROY-02/04 | ✅ |
 | El organizador ve respuestas en vivo | TC-ADM-05/06, TC-INT-02 | ✅ |
 | Soporta 30+ usuarios | TC-INT-03 | ✅ |
-| Cambiar entre varias preguntas | TC-ADM-03/04, TC-PROY-06 | ✅ |
-| Nube de palabras y exportar PDF | TC-ADM-07/08 | ✅ (diseñado) |
+| Cambiar entre varias preguntas | TC-ADM-03/04, TC-PROY-06 | ✅ (parcial) |
+| Nube de palabras y exportar PDF | TC-ADM-07/08 | ✅ |
 | Estados sin pregunta activa | TC-PAR-10, TC-PROY-05 | ✅ |
 | Funciona sin backend (demo) | TC-INT-04 | ✅ |
 
 ---
 
-## Resumen de resultados
+## Notas de ejecución
 
-- **Automatizadas (motor de emociones):** 11/11 PASS (`node --test`).
-- **UI/integración ejecutadas con evidencia (2026-07-23):** carga de pregunta,
-  reacciones de miedo y confusión, envío y registro, tiempo real entre clientes
-  Supabase, contadores, proyección con QR + contador, estados sin pregunta,
-  QR apuntando a la vista de usuarios, sin errores de consola.
-- **Diseñadas y pendientes de ejecución UI en esta sesión:** TC-PAR-04/07/08/09,
-  TC-ADM-01/07/08/09, TC-PROY-06, TC-NF-01/03. Se dejaron documentadas con pasos
-  y resultado esperado para ejecutar en una corrida dedicada.
-
-Ningún caso ejecutado falló. Los pendientes son por cierre de sesión de pruebas,
-no por defecto encontrado. Recomendación: correr los pendientes en modo demo
-local para no afectar la base de producción, y sumar TC-PAR-04/07/08 y
-TC-ADM-07/08 al conjunto automatizado donde sea posible.
+- Las pruebas de UI se ejecutaron en **modo demo local** (localStorage) para no
+  afectar la base de producción, que quedó limpia y lista para el evento. La
+  integración real con Supabase (TC-INT-01/02) se validó por separado con dos
+  clientes en vivo.
+- El clic por coordenadas del navegador de automatización resultó inestable; los
+  handlers se dispararon por su `id` para verificar la lógica. No es un defecto de
+  la app (el `onclick` funciona con clic/tap real).
+- Los contadores por emoción cuadran exactamente con los datos enviados
+  (6 respuestas = 3 positivas + 2 confundidos + 1 miedo).

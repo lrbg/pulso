@@ -64,3 +64,8 @@ function faceHTML(mood, size) {
 function moodLabel(mood) {
   return (MOODS[mood] || MOODS.neutral).label;
 }
+
+// Permite reutilizar el motor en pruebas con Node (en el navegador no hace nada).
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { MOODS, KEYWORDS, classifyMood, faceHTML, moodLabel };
+}

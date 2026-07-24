@@ -35,6 +35,11 @@ en la nube, con el panel actualizándose en tiempo real.
 Por **palabras clave** (reglas en `js/character.js`, objeto `KEYWORDS`). Es gratis,
 instantáneo y no depende de ninguna API. Para afinar, agrega palabras a cada emoción.
 
+## Pruebas
+
+- **Automáticas** del motor de emociones: `node --test` (11 casos, 100% pass).
+- **Suite funcional** completa (ISTQB): ver [`docs/pruebas-funcionalidad.md`](docs/pruebas-funcionalidad.md).
+
 ## Nota de seguridad
 
 La app estática usa solo la `anon key`, así que el `ADMIN_PASSCODE` es protección ligera
